@@ -1,4 +1,5 @@
 const https = require('https');
+const fs = require('fs');
 
 var options = {
   protocol: 'https:',
@@ -6,7 +7,8 @@ var options = {
   path: '/repos/offcourse/offcourse-roadmap/issues',
   method: 'GET',
   headers: {
-    'User-Agent': 'Offcourse-roadmap'
+    'User-Agent': 'Offcourse-roadmap',
+    'Accept': 'application/vnd.github.v3.html+json'
   }
 };
 
@@ -21,11 +23,13 @@ var req = https.request(options, (response) => {
   }); 
 
   response.on("end", function (err) {
-    // finished transferring data
-    // dump the raw data
-    console.log(buffer);
-    console.log("\n");
     data = JSON.parse(buffer);
+    fs.writeFile("build/issues.json", JSON.stringify(data, null, 2), function(err) {
+        if(err) {
+            return console.log(err);
+        }
+        console.log("The file was saved!");
+    }); 
   }); 
 });
 
